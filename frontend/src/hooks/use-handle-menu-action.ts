@@ -7,6 +7,7 @@ import {
 import { useHandleNoticeStatusMutation } from '@/domains/notice/api';
 import { useHandleStaffStatusMutation } from '@/domains/staff/api';
 import { useReviewStudentStatusMutation } from '@/domains/student/api';
+import { useDownloadReportMutation } from '@/domains/student/api';
 
 export const useHandleMenuAction = () => {
   const [handleStaffStatus] = useHandleStaffStatusMutation();
@@ -15,8 +16,22 @@ export const useHandleMenuAction = () => {
   const [resendPwdSetupLink] = useResendPwdSetupLinkMutation();
   const [resetPwd] = useResetPwdMutation();
   const [handleNoticeStatus] = useHandleNoticeStatusMutation();
+  const [handleDownloadReport] = useDownloadReportMutation();
 
   const handleAction = async (menuItemValue: string, selectedId: number) => {
+    if (menuItemValue === 'DOWNLOAD_REPORT') {
+      const blob = await handleDownloadReport(selectedId).unwrap();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `student-report-${selectedId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      return { message: 'Report downloaded successfully' };
+    }
+
     const actionHandlers: {
       [key in keyof typeof menuItemTexts]: () => Promise<{ message: string }>;
     } = {

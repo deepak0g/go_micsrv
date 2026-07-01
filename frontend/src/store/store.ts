@@ -11,13 +11,14 @@ import {
   REGISTER
 } from 'redux-persist';
 import { api } from '../api';
+import { goServiceApi } from '../api/go-service-api';
 import { appReducer } from './app-reducer';
 import { purgeMiddleware } from './middleware';
 
 const persistConfig = {
   key: 'root',
   storage,
-  blacklist: [api.reducerPath]
+  blacklist: [api.reducerPath, goServiceApi.reducerPath]
 };
 
 const persistedRootReducer = persistReducer(persistConfig, appReducer);
@@ -31,6 +32,7 @@ const store = configureStore({
       }
     })
       .concat(api.middleware)
+      .concat(goServiceApi.middleware)
       .concat(purgeMiddleware)
 });
 

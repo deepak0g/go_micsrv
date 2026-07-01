@@ -1,6 +1,15 @@
 import * as React from 'react';
 import { Box, ListItemIcon, ListItemText, MenuItem, Paper, Typography } from '@mui/material';
-import { Block, CheckCircle, Edit, Email, Key, LockReset, Visibility } from '@mui/icons-material';
+import {
+  Block,
+  CheckCircle,
+  Download,
+  Edit,
+  Email,
+  Key,
+  LockReset,
+  Visibility
+} from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
@@ -55,7 +64,18 @@ export const UserAccountBasic = ({ data }: { data: UserAccountBasicDataProps }) 
     ],
     []
   );
-  const onMenuItemClick = (menuAction: string, userId: number) => {
+  const onMenuItemClick = async (menuAction: string, userId: number) => {
+    
+    if (menuAction === 'DOWNLOAD_REPORT') {
+      try {
+        const result = await handleAction(menuAction, userId);
+        toast.info(result?.message);
+      } catch (error) {
+        toast.error(getErrorMsg(error as FetchBaseQueryError | SerializedError).message);
+      }
+      return;
+    }
+
     const modalTitle = menuItemTexts[menuAction] || '';
     const modalBodyText = `Are you sure you want to ${modalTitle}?`;
     setState((prevState) => ({
@@ -109,6 +129,11 @@ export const UserAccountBasic = ({ data }: { data: UserAccountBasicDataProps }) 
       action: 'RESET_USER_PWD',
       icon: <LockReset />,
       text: 'Reset Password'
+    },
+    {
+      action: 'DOWNLOAD_REPORT',
+      icon: <Download />,
+      text: 'Download Report'
     }
   ];
   const table = useMaterialReactTable({

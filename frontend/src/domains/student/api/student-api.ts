@@ -1,4 +1,5 @@
 import { api, Tag } from '@/api';
+import { goServiceApi } from '@/api/go-service-api';
 import {
   AddStudent,
   GetStudentDetailProps,
@@ -57,6 +58,18 @@ export const studentApi = api.injectEndpoints({
   })
 });
 
+export const goServiceStudentApi = goServiceApi.injectEndpoints({
+  endpoints: (builder) => ({
+    downloadReport: builder.mutation<Blob, number>({
+      query: (id) => ({
+        url: `/students/${id}/report`,
+        method: 'GET',
+        responseHandler: (response) => response.blob()
+      })
+    })
+  })
+});
+
 export const {
   useGetStudentsQuery,
   useLazyGetStudentDetailQuery,
@@ -65,3 +78,5 @@ export const {
   useUpdateStudentMutation,
   useGetTeachersQuery
 } = studentApi;
+
+export const { useDownloadReportMutation } = goServiceStudentApi;

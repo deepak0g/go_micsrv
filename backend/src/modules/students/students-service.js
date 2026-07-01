@@ -15,7 +15,7 @@ const getAllStudents = async (payload) => {
         throw new ApiError(404, "Students not found");
     }
 
-    return students;
+    return { students };
 }
 
 const getStudentDetail = async (id) => {
@@ -45,6 +45,7 @@ const addNewStudent = async (payload) => {
             return { message: ADD_STUDENT_AND_BUT_EMAIL_SEND_FAIL }
         }
     } catch (error) {
+        console.error(error);
         throw new ApiError(500, "Unable to add student");
     }
 }

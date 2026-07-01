@@ -9,11 +9,13 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jung-kurt/gofpdf"
+
+	"github.com/rs/cors"
 )
 
-//NOTE - can be set via env
+// NOTE - can be set via env
 const (
-	backendBaseURL = "http://localhost:5007/api/v1"
+	backendBaseURL = "http://localhost:5000/api/v1"
 	adminUsername  = "admin@school-admin.com"
 	adminPassword  = "3OU4zn3q6Zh9"
 )
@@ -245,8 +247,17 @@ func main() {
 		w.Write(pdfBytes)
 	})
 
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:5173", "http://localhost:3000"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"*"},
+		AllowCredentials: true,
+	})
+
+	handler := c.Handler(r)
+
 	fmt.Println("Server listening on :8080")
-	if err := http.ListenAndServe(":8080", r); err != nil {
+	if err := http.ListenAndServe(":8080", handler); err != nil {
 		fmt.Println("Server error:", err)
 	}
 }
